@@ -7,6 +7,10 @@ Enable browser push notifications using Angular
  $ bower install angular-browser-push-notifications
 ```
 
+```
+ $ npm install --save git+https://github.com/ansaries/angular-browser-push-notifications.git
+```
+
 ## Pre-requisites
 
 - If you are not running on `localhost`, you must run this on a HTTPS domain verified in [Google developer console](https://console.developers.google.com)
@@ -66,11 +70,15 @@ Set the url for the service worker which will be registered
 angular.module('notificationsApp', ['browserPushNotifications'])
   .controller('StatusController', function($scope, BrowserPushNotifications){
     $scope.status = 'Pending';
-    BrowserPushNotifications.getSubscriptionId().then(function(id) {
-      $scope.status = id;
-    }, function(err) {
-      $scope.status = 'Error ' + err;
-    });
+    
+    if(!BrowserPushNotifications.currentPermission !== 'granted') {
+      BrowserPushNotifications.getSubscriptionId().then(function(id) {
+        $scope.status = id;
+      }, function(err) {
+        $scope.status = 'Error ' + err;
+      });
+    }
+    
   });
 ```
 
