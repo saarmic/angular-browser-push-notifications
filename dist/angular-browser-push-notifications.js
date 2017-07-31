@@ -1,17 +1,10 @@
 angular.module('browserPushNotifications', [])
   .provider('BrowserPushNotifications', function() {
     // Default values
-    var workerUrl = '/service-worker.js';
+    var workerUrl = '/sw.js';
     var userVisibleOnly = true;
 
-    // Config methods
-    this.setWorkerUrl = function(u) {
-      workerUrl = u;
-    }
-
-    this.setUserVisibleOnly = function(direction) {
-      userVisibleOnly = direction;
-    }
+   
 
     this.$get = ['$q', '$log', 'BrowserPushNotificationsStatus', '$rootScope', function($q, $log, BrowserPushNotificationsStatus, $rootScope) {
       // All methods starting with an "_" are using ES6 promises and not Angular promises
@@ -72,12 +65,16 @@ angular.module('browserPushNotifications', [])
         getSubscriptionId: function() {
           return service.register().then(function(sub){
             // 'PushSubscription.subscriptionId' is deprecated and is now included in 'PushSubscription.endpoint'. It will be removed in Chrome 45, around August 2015.
-            if(sub.subscriptionId) {
-              return sub.subscriptionId;
-            }
-            return sub.endpoint.split('/').pop();
+            $log.debug(sub);
+            // if(sub.subscriptionId) {
+            //   return sub.subscriptionId;
+            // }
+            // return sub.endpoint.split('/').pop();
+            return sub;
           });
         },
+
+
         _registerWorker: function() {
           // Check that it's at the root
           if(workerUrl.lastIndexOf('/') > 0) {
@@ -89,7 +86,19 @@ angular.module('browserPushNotifications', [])
         },
         _workersSupported: function() {
           return 'serviceWorker' in navigator ? Promise.resolve() : Promise.reject(BrowserPushNotificationsStatus.WORKERS_NOT_SUPPORTED);
-        }
+        },
+        // Config methods
+        currentPermission: function() {
+          // Wrap with a function, so that we can extend this easily to
+          // support getting permissions using older API versions
+          return (Notification || {}).permission;
+        },
+        setWorkerUrl:function (u) {
+          workerUrl = u;
+        },
+        setUserVisibleOnly:function (direction) {
+          userVisibleOnly = direction;
+        },
       };
 
       return service;
