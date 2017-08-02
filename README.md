@@ -8,7 +8,7 @@ Enable browser push notifications using Angular
 ```
 
 ```
- $ npm install --save git+https://github.com/ansaries/angular-browser-push-notifications.git
+ $ npm install --save git+https://git@github.com/ansaries/angular-browser-push-notifications.git
 ```
 
 ## Pre-requisites
